@@ -8,17 +8,21 @@
 import SwiftUI
 
 struct ForecastView: View {
-    var manager = NetworkManager()
+    var api = WeatherAPI()
     
     var body: some View {
         Button("Press") {
             print("Hello")
             downloadWeather()
+            
+            
         }
     }
     
-    func downloadWeather() {
-        manager.fetchForecastWeather(latitude: 30.214, longitude: 50.134)
+    func downloadWeather()  {
+        WeatherAPI.getWeather { forecastWeatherData in
+            print(forecastWeatherData.city.country)
+        }
     }
 }
 

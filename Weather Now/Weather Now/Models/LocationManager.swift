@@ -8,21 +8,32 @@
 import Foundation
 import CoreLocation
 
-class LocationManager {
+class LocationManager: NSObject, CLLocationManagerDelegate {
     static let shared = LocationManager()
+    
     let manager = CLLocationManager()
     
+    var completion: ((CLLocation) -> Void)?
+    
     public func getUserLocation(completion: @escaping ((CLLocation) -> Void)) {
+        self.completion = completion
         manager.requestWhenInUseAuthorization()
-        manager.requestLocation()
+        manager.delegate = self
+        manager.desiredAccuracy = kCLLocationAccuracyReduced
+        manager.startUpdatingLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         print("didUpdateLocations")
-        guard let location = locations.last else { return }
+        guard let location = locations.first else { return }
+        manager.stopUpdatingLocation()
+        completion?(location)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
            print("Failed to find user's location: \(error.localizedDescription)")
       }
+    
+    
+    
 }

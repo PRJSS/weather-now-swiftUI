@@ -51,6 +51,7 @@
 		657AFC04287F1C7900545AEA /* Weather_NowUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weather_NowUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		657AFC14287F4FD400545AEA /* ForecastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastView.swift; sourceTree = "<group>"; };
 		657AFC16287F521900545AEA /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		657C28F7287F653C00845539 /* Weather-Now-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Weather-Now-Info.plist"; sourceTree = SOURCE_ROOT; };
 		65E6BA9F287F585E00B25D74 /* WeatherAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherAPI.swift; sourceTree = "<group>"; };
 		65E6BAA1287F587100B25D74 /* ForecastWeatherData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastWeatherData.swift; sourceTree = "<group>"; };
 		65E6BAA3287F590900B25D74 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
@@ -106,6 +107,7 @@
 		657AFBE6287F1C7700545AEA /* Weather Now */ = {
 			isa = PBXGroup;
 			children = (
+				657C28F7287F653C00845539 /* Weather-Now-Info.plist */,
 				657AFC13287F4F9700545AEA /* Models */,
 				657AFC12287F4F8A00545AEA /* ViewModels */,
 				657AFC11287F4F8300545AEA /* Views */,
@@ -468,6 +470,10 @@
 				DEVELOPMENT_TEAM = BU5D545FBS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Weather-Now-Info.plist";
+				INFOPLIST_KEY_NSFileProviderDomainUsageDescription = "";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to provide local weather and forecast";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -497,6 +503,10 @@
 				DEVELOPMENT_TEAM = BU5D545FBS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Weather-Now-Info.plist";
+				INFOPLIST_KEY_NSFileProviderDomainUsageDescription = "";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to provide local weather and forecast";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
