@@ -19,8 +19,8 @@ class ForecastWeather: NSObject {
         var i = 1
         while i < forecastWeatherData.list.count {
             let weather3h = Weather3H(weather3Hdata: forecastWeatherData.list[i])
-            if isFromOneDay(dt1: days[days.count - 1].Weather3HList[0].date, dt2: weather3h.date) {
-                days[days.count - 1].Weather3HList.append(weather3h)
+            if isFromOneDay(dt1: days[days.count - 1].weather3HList[0].date, dt2: weather3h.date) {
+                days[days.count - 1].weather3HList.append(weather3h)
             } else {
                 days.append(WeatherDay(weather3h: weather3h))
             }
@@ -36,18 +36,19 @@ class ForecastWeather: NSObject {
 
 struct WeatherDay {
     var dayName: String
-    var Weather3HList: [Weather3H]
+    var weather3HList: [Weather3H]
     
     init(weather3h: Weather3H) {
         dayName = dateToDayName(dt: weather3h.date)
         
-        Weather3HList = []
-        Weather3HList.append(weather3h)
+        weather3HList = []
+        weather3HList.append(weather3h)
     }
 }
 
 
-struct Weather3H {
+struct Weather3H: Identifiable {
+    var id: UUID
     var date: Int
     var time: String
     var main: String
@@ -60,6 +61,7 @@ struct Weather3H {
         main = weather3Hdata.weather[0].main
         temp = "\(Int(weather3Hdata.main.temp - 273.15))ºC"
         icon = iconFormatter(image: weather3Hdata.weather[0].icon)
+        id = UUID()
     }
 }
 

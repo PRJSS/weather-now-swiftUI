@@ -8,27 +8,49 @@
 import SwiftUI
 
 struct ForecastView: View {
-    var api = WeatherAPI()
+    @ObservedObject var viewModel = ForecastViewModel()
+    @State var isLoading = false
     
     var body: some View {
-        Button("Press") {
-            print("Hello")
-            downloadWeather()
-            
-            
+        ZStack {
+            List(viewModel.forecastWeather.days, id: \.dayName) { item in
+                Section(header: Text(item.dayName)) {
+                    ForEach(item.weather3HList) { item in
+                        ForecastRow(icon: item.icon, time: item.time, weather: item.main, temperature: item.temp)
+                    }
+                }
+            }
+            ProgressView("Looking for your forecast...").hidden(!isLoading)
         }
+                .onAppear {
+                    Task {
+                        await updateForecast()
+                    }
+                }
     }
     
-    func downloadWeather()  {
-        WeatherAPI.getWeather { forecastWeatherData in
-            print(forecastWeatherData.city.country)
-        }
+    func updateForecast() async {
+        isLoading = true
+        await viewModel.updateWeather()
+        print("weather updated")
+        isLoading = false
+        
     }
 }
 
 struct ForecastView_Previews: PreviewProvider {
     static var previews: some View {
         ForecastView()
+            .previewInterfaceOrientation(.portrait)
+    }
+}
+
+extension View {
+    @ViewBuilder func hidden(_ shouldHide: Bool) -> some View {
+        switch shouldHide {
+        case true: self.hidden()
+        case false: self
+        }
     }
 }
 
