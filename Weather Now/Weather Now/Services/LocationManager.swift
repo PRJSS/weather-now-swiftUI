@@ -10,29 +10,28 @@ import CoreLocation
 
 class LocationManager: NSObject, CLLocationManagerDelegate {
     static let shared = LocationManager()
+    @Published var location: CLLocationCoordinate2D?
     
     let manager = CLLocationManager()
-    
-    var completion: ((CLLocation) -> Void)?
-    
-    public func getUserLocation(completion: @escaping ((CLLocation) -> Void)) {
-        self.completion = completion
-        manager.requestWhenInUseAuthorization()
+    override init() {
+        super.init()
         manager.delegate = self
+    }
+    
+    func requestLocation() {
+        manager.requestWhenInUseAuthorization()
         manager.desiredAccuracy = kCLLocationAccuracyReduced
         manager.startUpdatingLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print("didUpdateLocations")
-        guard let location = locations.first else { return }
+        location = locations.first?.coordinate
         manager.stopUpdatingLocation()
-        completion?(location)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-           print("Failed to find user's location: \(error.localizedDescription)")
-      }
+        print("Failed to find user's location: \(error.localizedDescription)")
+    }
     
     
     

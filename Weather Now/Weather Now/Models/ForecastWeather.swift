@@ -7,23 +7,16 @@
 
 import Foundation
 
-struct ForecastWeather {
+class ForecastWeather: NSObject {
     var cityName: String
     var days: [WeatherDay]
-    
-    //    var numberOfDays: Int
-    //    var daysSet: Set<String>
-    //    var daysList: [String]
-    
-    init?(forecastWeatherData: ForecastWeatherData) {
+
+    init(forecastWeatherData: ForecastWeatherData) {
         cityName = forecastWeatherData.city.name
-        
         days = []
         days.append(WeatherDay(weather3h: Weather3H(weather3Hdata: forecastWeatherData.list[0])))
         
-        
         var i = 1
-        
         while i < forecastWeatherData.list.count {
             let weather3h = Weather3H(weather3Hdata: forecastWeatherData.list[i])
             if isFromOneDay(dt1: days[days.count - 1].Weather3HList[0].date, dt2: weather3h.date) {
@@ -32,25 +25,27 @@ struct ForecastWeather {
                 days.append(WeatherDay(weather3h: weather3h))
             }
             i += 1
-                
         }
-        
-        
-        
     }
     
-    struct WeatherDay {
-        var dayName: String
-        var Weather3HList: [Weather3H]
-        
-        init(weather3h: Weather3H) {
-            dayName = dateToDayName(dt: weather3h.date)
-            
-            Weather3HList = []
-            Weather3HList.append(weather3h)
-        }
+    override init() {
+        self.cityName = "Not Found"
+        self.days = [WeatherDay]()
     }
 }
+
+struct WeatherDay {
+    var dayName: String
+    var Weather3HList: [Weather3H]
+    
+    init(weather3h: Weather3H) {
+        dayName = dateToDayName(dt: weather3h.date)
+        
+        Weather3HList = []
+        Weather3HList.append(weather3h)
+    }
+}
+
 
 struct Weather3H {
     var date: Int
@@ -91,7 +86,7 @@ fileprivate func dateToTime (dt: Int) -> String {
 fileprivate func isFromOneDay (dt1: Int, dt2: Int) -> Bool {
     let date1 = Date(timeIntervalSince1970: Double(dt1))
     let date2 = Date(timeIntervalSince1970:  Double(dt2))
-
+    
     return Calendar.current.isDate(date1, inSameDayAs: date2)
 }
 
