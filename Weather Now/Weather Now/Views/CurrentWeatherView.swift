@@ -9,6 +9,8 @@ import SwiftUI
 
 struct CurrentWeatherView: View {
     @ObservedObject var viewModel: CurrentWeatherViewModel
+    @State private var isSharePresented: Bool = false
+    @State private var shareText: ShareText?
     
     var body: some View {
         VStack(alignment: .center, spacing: 30) {
@@ -43,8 +45,19 @@ struct CurrentWeatherView: View {
                         Text(viewModel.windDeg)
                     }
                 }
+                Button("Share") {
+                    self.isSharePresented = true
+                    let text = "Current weather in \(self.viewModel.location) is: \(self.viewModel.temperature), \(self.viewModel.mainCondition), \(self.viewModel.pressure)."
+                    shareText = ShareText(text: text)
+                }
+                .sheet(item: $shareText) { shareText in
+                    ActivityView(text: shareText.text)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.gray)
             }
         }
+        .padding()
     }
 }
 
