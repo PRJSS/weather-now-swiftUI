@@ -18,7 +18,7 @@ class ForecastWeatherViewModel: ObservableObject {
         self.forecastWeather = ForecastWeather()
     }
 
-    func updateForecast() async {
+    func updateForecast() async throws {
         await updateLocation()
         if self.locationData?.longitude != nil {
             if let forecastWeather = await weatherAPI.getForecastWeather(latitude: self.locationData!.latitude!, longitude: self.locationData!.longitude!) {
@@ -28,9 +28,11 @@ class ForecastWeatherViewModel: ObservableObject {
                 }
             } else {
                 print("weatherAPI returns nil while downloading forecast")
+                throw networkError.networkError
             }
         } else {
             print("location is nil")
+            throw locationError.notFoundLocation
         }
     }
     

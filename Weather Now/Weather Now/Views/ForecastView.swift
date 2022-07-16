@@ -11,47 +11,60 @@ struct ForecastView: View {
     @ObservedObject var forecastWeatherViewModel = ForecastWeatherViewModel()
     @ObservedObject var currentWeatherViewModel = CurrentWeatherViewModel()
     @State var isLoading = false
+    @State var isNetworkErrorCatched = false
+    @State var isLocationErrorCatched = false
     @State var selectedRow: UUID?
+    @State var errorText: String = ""
     
     var body: some View {
         NavigationView {
             ZStack {
-                VStack {
-                    List(forecastWeatherViewModel.forecastWeather.days, id: \.dayName) { day in
-                        
-                        if day.dayName == "Current" {
-                            HStack {
-                                Spacer()
-                                CurrentWeatherView(viewModel: currentWeatherViewModel).padding(.all)
-                                Spacer()
-                            }
-                        } else {
-                            Section(header: Text(day.dayName)) {
-                                ForEach(day.weather3HList) { hour in
-                                    ForecastRow(icon: hour.icon, time: hour.time, weather: hour.main, temperature: hour.temp)
-                                        .onTapGesture {
-                                            withAnimation {
-                                                if self.selectedRow == hour.id {
-                                                    self.selectedRow = nil
-                                                } else {
-                                                    self.selectedRow = hour.id
-                                                }
+                List(forecastWeatherViewModel.forecastWeather.days, id: \.dayName) { day in
+                    if day.dayName == "Current" {
+                        HStack {
+                            Spacer()
+                            CurrentWeatherView(viewModel: currentWeatherViewModel)
+                            Spacer()
+                        }
+                    } else {
+                        Section(header: Text(day.dayName)) {
+                            ForEach(day.weather3HList) { hour in
+                                ForecastRow(icon: hour.icon, time: hour.time, weather: hour.main, temperature: hour.temp)
+                                    .onTapGesture {
+                                        withAnimation {
+                                            if self.selectedRow == hour.id {
+                                                self.selectedRow = nil
+                                            } else {
+                                                self.selectedRow = hour.id
                                             }
                                         }
-                                    if (self.selectedRow == hour.id) {
-                                        HStack {
-                                            Spacer()
-                                            ForecastDetailsView(cloudness: hour.cloudness, windSpeed: hour.windSpeed, precipitation: hour.precipitation)
-                                            Spacer()
-                                        }
+                                    }
+                                if (self.selectedRow == hour.id) {
+                                    HStack {
+                                        Spacer()
+                                        ForecastDetailsView(cloudness: hour.cloudness, windSpeed: hour.windSpeed, precipitation: hour.precipitation)
+                                        Spacer()
                                     }
                                 }
                             }
                         }
                     }
-                    .listStyle(InsetGroupedListStyle())
                 }
+                .listStyle(InsetGroupedListStyle())
+                
                 ProgressView("Looking for your forecast...").hidden(!isLoading)
+                
+                VStack(spacing: 30) {
+                    Text("Something wrong with your \(errorText)").foregroundColor(.secondary)
+                    Button("Refresh") {
+                        Task {
+                            await updateForecastAndWeather()
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.green)
+                }.hidden(!(isLocationErrorCatched || isNetworkErrorCatched))
+                
             }
             .navigationTitle(forecastWeatherViewModel.forecastWeather.cityName)
             .navigationBarTitleDisplayMode(.large)
@@ -64,12 +77,32 @@ struct ForecastView: View {
     }
     
     func updateForecastAndWeather() async {
+        isLocationErrorCatched = false
+        isNetworkErrorCatched = false
+        errorText = ""
         isLoading = true
-        await forecastWeatherViewModel.updateForecast()
-        await currentWeatherViewModel.updateWeather()
-        print("weather updated")
-        isLoading = false
         
+        do {
+            try await forecastWeatherViewModel.updateForecast()
+            try await currentWeatherViewModel.updateWeather()
+        } catch locationError.notFoundLocation {
+            print("error location -------------------------------<<<<<")
+            isLocationErrorCatched = true
+        } catch networkError.networkError {
+            print("error network -------------------------------<<<<<")
+            isNetworkErrorCatched = true
+        } catch {
+            print("idk")
+        }
+        
+        print("weather updated")
+        
+        if (isLocationErrorCatched || isNetworkErrorCatched) {
+            if isLocationErrorCatched { errorText.count == 0 ? (errorText += "location") : (errorText += " and location") }
+            if isNetworkErrorCatched { errorText.count == 0 ? (errorText += "internet connection") : (errorText += " and internet connection") }
+        }
+        
+        isLoading = false
     }
 }
 

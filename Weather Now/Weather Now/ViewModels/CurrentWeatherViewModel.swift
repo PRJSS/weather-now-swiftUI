@@ -142,7 +142,7 @@ class CurrentWeatherViewModel: ObservableObject {
         }
     }
     
-    func updateWeather() async {
+    func updateWeather() async throws {
         await updateLocation()
         if self.locationData?.longitude != nil {
             if let currentWeather = await weatherAPI.getCurrentWeather(latitude: self.locationData!.latitude!, longitude: self.locationData!.longitude!) {
@@ -151,9 +151,11 @@ class CurrentWeatherViewModel: ObservableObject {
                 }
             } else {
                 print("weatherAPI returns nil while downloading current weather")
+                throw networkError.networkError
             }
         } else {
             print("location is nil")
+            throw locationError.notFoundLocation
         }
     }
     
