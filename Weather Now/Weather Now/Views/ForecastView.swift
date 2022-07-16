@@ -18,40 +18,38 @@ struct ForecastView: View {
             ZStack {
                 VStack {
                     List(forecastWeatherViewModel.forecastWeather.days, id: \.dayName) { day in
-                        Section(header: Text(day.dayName)) {
-                            ForEach(day.weather3HList) { hour in
-                                ForecastRow(icon: hour.icon, time: hour.time, weather: hour.main, temperature: hour.temp)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            if self.selectedRow == hour.id {
-                                                self.selectedRow = nil
-                                            } else {
-                                                self.selectedRow = hour.id
-                                            }
-                                        }
-                                    }
-                                if (self.selectedRow == hour.id) {
-                                    HStack {
-                                        Spacer()
-                                        ForecastDetailsView(cloudness: hour.cloudness, windSpeed: hour.windSpeed, precipitation: hour.precipitation)
-                                        Spacer()
-                                    }
-                                }
-                            }
-                        }
+                        
                         if day.dayName == "Current" {
                             HStack {
                                 Spacer()
                                 CurrentWeatherView(viewModel: currentWeatherViewModel).padding(.all)
                                 Spacer()
                             }
+                        } else {
+                            Section(header: Text(day.dayName)) {
+                                ForEach(day.weather3HList) { hour in
+                                    ForecastRow(icon: hour.icon, time: hour.time, weather: hour.main, temperature: hour.temp)
+                                        .onTapGesture {
+                                            withAnimation {
+                                                if self.selectedRow == hour.id {
+                                                    self.selectedRow = nil
+                                                } else {
+                                                    self.selectedRow = hour.id
+                                                }
+                                            }
+                                        }
+                                    if (self.selectedRow == hour.id) {
+                                        HStack {
+                                            Spacer()
+                                            ForecastDetailsView(cloudness: hour.cloudness, windSpeed: hour.windSpeed, precipitation: hour.precipitation)
+                                            Spacer()
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                     .listStyle(InsetGroupedListStyle())
-                    
-                        .listRowInsets(EdgeInsets())
-                        .frame(maxWidth: .infinity, minHeight: 60)
-                        .background(Color(UIColor.systemGroupedBackground))
                 }
                 ProgressView("Looking for your forecast...").hidden(!isLoading)
             }
