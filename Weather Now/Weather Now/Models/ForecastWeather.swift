@@ -55,6 +55,12 @@ struct Weather3H: Identifiable {
     var temp: String
     var icon: String
     
+    var cloudness: String
+    var windSpeed: String
+    var precipitation: String
+    
+    
+    
     init(weather3Hdata: ForecastWeatherData.List) {
         date = weather3Hdata.dt
         time = dateToTime(dt: weather3Hdata.dt)
@@ -62,6 +68,10 @@ struct Weather3H: Identifiable {
         temp = "\(Int(weather3Hdata.main.temp - 273.15))ºC"
         icon = iconFormatter(image: weather3Hdata.weather[0].icon)
         id = UUID()
+        
+        cloudness = "\(weather3Hdata.clouds.all) %"
+        windSpeed = "\(weather3Hdata.wind.speed) km/h"
+        precipitation = "\(weather3Hdata.pop) %"
     }
 }
 

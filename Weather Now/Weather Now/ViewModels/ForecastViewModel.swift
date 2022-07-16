@@ -17,7 +17,7 @@ class ForecastViewModel: ObservableObject {
 
     func updateWeather() async {
         await updateLocation()
-        if self.locationData != nil {
+        if self.locationData?.longitude != nil {
             if let forecastWeather = await weatherAPI.getWeather(latitude: self.locationData!.latitude!, longitude: self.locationData!.longitude!) {
                 DispatchQueue.main.async {
                     self.forecastWeather = forecastWeather
