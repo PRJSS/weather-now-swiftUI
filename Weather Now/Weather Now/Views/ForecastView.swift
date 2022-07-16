@@ -15,6 +15,7 @@ struct ForecastView: View {
     @State var isLocationErrorCatched = false
     @State var selectedRow: UUID?
     @State var errorText: String = ""
+    @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
         NavigationView {
@@ -51,7 +52,7 @@ struct ForecastView: View {
                     }
                 }
                 .listStyle(InsetGroupedListStyle())
-                
+                .hidden(isLoading)
                 ProgressView("Looking for your forecast...").hidden(!isLoading)
                 
                 VStack(spacing: 30) {
@@ -74,6 +75,13 @@ struct ForecastView: View {
                 await updateForecastAndWeather()
             }
         }
+        .onChange(of: scenePhase) { newPhase in
+                        if newPhase == .active {
+                            Task {
+                                await updateForecastAndWeather()
+                            }
+                        }
+                    }
     }
     
     func updateForecastAndWeather() async {
