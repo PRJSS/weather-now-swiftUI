@@ -27,11 +27,9 @@ class ForecastWeatherViewModel: ObservableObject {
                     self.forecastWeather = forecastWeather
                 }
             } else {
-                print("weatherAPI returns nil while downloading forecast")
                 throw networkError.networkError
             }
         } else {
-            print("location is nil")
             throw locationError.notFoundLocation
         }
     }

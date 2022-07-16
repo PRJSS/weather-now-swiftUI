@@ -150,11 +150,9 @@ class CurrentWeatherViewModel: ObservableObject {
                     self.currentWeather = currentWeather
                 }
             } else {
-                print("weatherAPI returns nil while downloading current weather")
                 throw networkError.networkError
             }
         } else {
-            print("location is nil")
             throw locationError.notFoundLocation
         }
     }

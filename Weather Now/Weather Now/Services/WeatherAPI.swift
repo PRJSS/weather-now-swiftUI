@@ -27,28 +27,24 @@ struct NetworkManager {
     
     func fetchForecastWeather(latitude lat: Double, longitude lon: Double) async -> ForecastWeather? {
         guard  let url = URL(string: "https://api.openweathermap.org/data/2.5/forecast?lat=\(lat)&lon=\(lon)&appid=\(apiKey)") else { return nil }
-        print(url)
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
             if let decodedResponse = try? JSONDecoder().decode(ForecastWeatherData.self, from: data) {
                 return ForecastWeather(forecastWeatherData: decodedResponse)
             }
         } catch {
-            print("Invalid data")
         }
         return nil
     }
     
     func fetchCurrentWeather(latitude lat: Double, longitude lon: Double) async -> CurrentWeather? {
         guard  let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=\(apiKey)") else { return nil }
-        print(url)
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
             if let decodedResponse = try? JSONDecoder().decode(CurrentWeatherData.self, from: data) {
                 return CurrentWeather(currentWeatherData: decodedResponse)
             }
         } catch {
-            print("Invalid data")
         }
         return nil
     }

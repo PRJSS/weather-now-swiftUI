@@ -76,12 +76,12 @@ struct ForecastView: View {
             }
         }
         .onChange(of: scenePhase) { newPhase in
-                        if newPhase == .active {
-                            Task {
-                                await updateForecastAndWeather()
-                            }
-                        }
-                    }
+            if newPhase == .active {
+                Task {
+                    await updateForecastAndWeather()
+                }
+            }
+        }
     }
     
     func updateForecastAndWeather() async {
@@ -94,16 +94,11 @@ struct ForecastView: View {
             try await forecastWeatherViewModel.updateForecast()
             try await currentWeatherViewModel.updateWeather()
         } catch locationError.notFoundLocation {
-            print("error location -------------------------------<<<<<")
             isLocationErrorCatched = true
         } catch networkError.networkError {
-            print("error network -------------------------------<<<<<")
             isNetworkErrorCatched = true
         } catch {
-            print("idk")
         }
-        
-        print("weather updated")
         
         if (isLocationErrorCatched || isNetworkErrorCatched) {
             if isLocationErrorCatched { errorText.count == 0 ? (errorText += "location") : (errorText += " and location") }
