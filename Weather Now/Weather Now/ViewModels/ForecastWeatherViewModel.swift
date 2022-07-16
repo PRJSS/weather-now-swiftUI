@@ -7,38 +7,36 @@
 
 import Foundation
 
-class ForecastViewModel: ObservableObject {
+class ForecastWeatherViewModel: ObservableObject {
     @Published var forecastWeather: ForecastWeather
-
+    @Published private var locationData: LocationData?
+    
     private var locationManager = LocationManager()
     private var weatherAPI = WeatherAPI()
-    @Published private var locationData: LocationData?
+    
+    init() {
+        self.forecastWeather = ForecastWeather()
+    }
 
-
-    func updateWeather() async {
+    func updateForecast() async {
         await updateLocation()
         if self.locationData?.longitude != nil {
-            if let forecastWeather = await weatherAPI.getWeather(latitude: self.locationData!.latitude!, longitude: self.locationData!.longitude!) {
+            if let forecastWeather = await weatherAPI.getForecastWeather(latitude: self.locationData!.latitude!, longitude: self.locationData!.longitude!) {
+                forecastWeather.days.insert(WeatherDay(dayName: "Current"), at: 0)
                 DispatchQueue.main.async {
                     self.forecastWeather = forecastWeather
                 }
             } else {
-                print("weatherAPI returns nil")
+                print("weatherAPI returns nil while downloading forecast")
             }
         } else {
             print("location is nil")
         }
-        
-
     }
     
     private func updateLocation() async {
         locationManager.manager.requestLocation()
         let location = LocationData(latitude: locationManager.manager.location?.coordinate.latitude, longitude: locationManager.manager.location?.coordinate.longitude)
         self.locationData = location
-    }
-
-    init() {
-        self.forecastWeather = ForecastWeather()
     }
 }

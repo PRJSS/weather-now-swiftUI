@@ -7,8 +7,7 @@
 
 import SwiftUI
 
-
-struct ForecastDetails: View {
+struct ForecastDetailsView: View {
         var cloudness: String
         var windSpeed: String
         var precipitation: String
@@ -33,6 +32,6 @@ struct ForecastDetails: View {
 
 struct ForecastDetails_Previews: PreviewProvider {
     static var previews: some View {
-        ForecastDetails(cloudness: "56 %", windSpeed: "15 km/h", precipitation: "58 %")
+        ForecastDetailsView(cloudness: "56 %", windSpeed: "15 km/h", precipitation: "58 %")
     }
 }

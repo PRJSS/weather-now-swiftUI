@@ -16,7 +16,6 @@ struct ForecastRow: View {
     var body: some View {
         HStack(alignment: .center, spacing: 20) {
             Image(systemName: icon).font(.system(size: 50))
-            
             VStack(alignment: .leading, spacing: 5) {
                 Text(time)
                 Text(weather)

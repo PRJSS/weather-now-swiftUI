@@ -8,55 +8,67 @@
 import SwiftUI
 
 struct ForecastView: View {
-    @ObservedObject var viewModel = ForecastViewModel()
+    @ObservedObject var forecastWeatherViewModel = ForecastWeatherViewModel()
+    @ObservedObject var currentWeatherViewModel = CurrentWeatherViewModel()
     @State var isLoading = false
     @State var selectedRow: UUID?
     
     var body: some View {
         NavigationView {
             ZStack {
-                List(viewModel.forecastWeather.days, id: \.dayName) { day in
-                    Section(header: Text(day.dayName)) {
-                        ForEach(day.weather3HList) { hour in
-                            
-                            ForecastRow(icon: hour.icon, time: hour.time, weather: hour.main, temperature: hour.temp).onTapGesture {
-                                withAnimation {
-                                    if self.selectedRow == hour.id {
-                                        self.selectedRow = nil
-                                    } else {
-                                        self.selectedRow = hour.id
+                VStack {
+                    List(forecastWeatherViewModel.forecastWeather.days, id: \.dayName) { day in
+                        Section(header: Text(day.dayName)) {
+                            ForEach(day.weather3HList) { hour in
+                                ForecastRow(icon: hour.icon, time: hour.time, weather: hour.main, temperature: hour.temp)
+                                    .onTapGesture {
+                                        withAnimation {
+                                            if self.selectedRow == hour.id {
+                                                self.selectedRow = nil
+                                            } else {
+                                                self.selectedRow = hour.id
+                                            }
+                                        }
+                                    }
+                                if (self.selectedRow == hour.id) {
+                                    HStack {
+                                        Spacer()
+                                        ForecastDetailsView(cloudness: hour.cloudness, windSpeed: hour.windSpeed, precipitation: hour.precipitation)
+                                        Spacer()
                                     }
                                 }
                             }
-                            if (self.selectedRow == hour.id) {
-                                HStack {
-                                    Spacer()
-                                    ForecastDetails(cloudness: hour.cloudness, windSpeed: hour.windSpeed, precipitation: hour.precipitation)
-                                    Spacer()
-                                    
-                                }
+                        }
+                        if day.dayName == "Current" {
+                            HStack {
+                                Spacer()
+                                CurrentWeatherView(viewModel: currentWeatherViewModel).padding(.all)
+                                Spacer()
                             }
-                            
                         }
                     }
-                }.listStyle(InsetGroupedListStyle())
+                    .listStyle(InsetGroupedListStyle())
+                    
+                        .listRowInsets(EdgeInsets())
+                        .frame(maxWidth: .infinity, minHeight: 60)
+                        .background(Color(UIColor.systemGroupedBackground))
+                }
                 ProgressView("Looking for your forecast...").hidden(!isLoading)
             }
-            .navigationTitle(viewModel.forecastWeather.cityName)
+            .navigationTitle(forecastWeatherViewModel.forecastWeather.cityName)
             .navigationBarTitleDisplayMode(.large)
         }
-        
-        
         .onAppear {
             Task {
-                await updateForecast()
+                await updateForecastAndWeather()
             }
         }
     }
     
-    func updateForecast() async {
+    func updateForecastAndWeather() async {
         isLoading = true
-        await viewModel.updateWeather()
+        await forecastWeatherViewModel.updateForecast()
+        await currentWeatherViewModel.updateWeather()
         print("weather updated")
         isLoading = false
         
