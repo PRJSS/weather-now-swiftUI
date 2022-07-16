@@ -14,8 +14,8 @@ class ForecastWeather: NSObject {
     init(forecastWeatherData: ForecastWeatherData) {
         cityName = forecastWeatherData.city.name
         days = []
+        ///needs to show CurrentWeatherView in first Section in List
         days.append(WeatherDay(weather3h: Weather3H(weather3Hdata: forecastWeatherData.list[0])))
-        
         var i = 1
         while i < forecastWeatherData.list.count {
             let weather3h = Weather3H(weather3Hdata: forecastWeatherData.list[i])
@@ -44,6 +44,11 @@ struct WeatherDay {
         weather3HList = []
         weather3HList.append(weather3h)
     }
+    
+    init (dayName: String) {
+        self.dayName = dayName
+        self.weather3HList = []
+    }
 }
 
 
@@ -54,12 +59,9 @@ struct Weather3H: Identifiable {
     var main: String
     var temp: String
     var icon: String
-    
     var cloudness: String
     var windSpeed: String
     var precipitation: String
-    
-    
     
     init(weather3Hdata: ForecastWeatherData.List) {
         date = weather3Hdata.dt
