@@ -16,7 +16,7 @@ struct ForecastDetails: View {
     var body: some View {
         HStack(spacing: 40) {
             VStack {
-                Image(systemName: "smoke.fill")
+                Image(systemName: "smoke")
                 Text(cloudness)
             }
             VStack {
@@ -24,7 +24,7 @@ struct ForecastDetails: View {
                 Text(windSpeed)
             }
             VStack {
-                Image(systemName: "cloud.heavyrain.fill")
+                Image(systemName: "cloud.heavyrain")
                 Text(precipitation)
             }
         }

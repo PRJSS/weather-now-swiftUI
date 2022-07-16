@@ -13,41 +13,39 @@ struct ForecastView: View {
     @State var selectedRow: UUID?
     
     var body: some View {
-        VStack{
-            NavigationView {
-                
-                ZStack {
-                    List(viewModel.forecastWeather.days, id: \.dayName) { day in
-                        Section(header: Text(day.dayName)) {
-                            ForEach(day.weather3HList) { hour in
-                                
-                                ForecastRow(icon: hour.icon, time: hour.time, weather: hour.main, temperature: hour.temp).onTapGesture {
-                                    withAnimation {
+        NavigationView {
+            ZStack {
+                List(viewModel.forecastWeather.days, id: \.dayName) { day in
+                    Section(header: Text(day.dayName)) {
+                        ForEach(day.weather3HList) { hour in
+                            
+                            ForecastRow(icon: hour.icon, time: hour.time, weather: hour.main, temperature: hour.temp).onTapGesture {
+                                withAnimation {
+                                    if self.selectedRow == hour.id {
+                                        self.selectedRow = nil
+                                    } else {
                                         self.selectedRow = hour.id
                                     }
                                 }
-                                if (self.selectedRow == hour.id) {
-                                    HStack {
-                                        Spacer()
-                                        ForecastDetails(cloudness: hour.cloudness, windSpeed: hour.windSpeed, precipitation: hour.precipitation)
-                                        Spacer()
-                                        
-                                    }
-                                    
+                            }
+                            if (self.selectedRow == hour.id) {
+                                HStack {
+                                    Spacer()
+                                    ForecastDetails(cloudness: hour.cloudness, windSpeed: hour.windSpeed, precipitation: hour.precipitation)
+                                    Spacer()
                                     
                                 }
-                                
                             }
+                            
                         }
-                    }.listStyle(InsetGroupedListStyle())
-                    
-                    ProgressView("Looking for your forecast...").hidden(!isLoading)
-                }
-                
-                .navigationTitle(viewModel.forecastWeather.cityName)
-                .navigationBarTitleDisplayMode(.large)
+                    }
+                }.listStyle(InsetGroupedListStyle())
+                ProgressView("Looking for your forecast...").hidden(!isLoading)
             }
+            .navigationTitle(viewModel.forecastWeather.cityName)
+            .navigationBarTitleDisplayMode(.large)
         }
+        
         
         .onAppear {
             Task {

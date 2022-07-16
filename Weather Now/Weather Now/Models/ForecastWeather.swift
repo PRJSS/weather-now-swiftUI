@@ -70,8 +70,8 @@ struct Weather3H: Identifiable {
         id = UUID()
         
         cloudness = "\(weather3Hdata.clouds.all) %"
-        windSpeed = "\(weather3Hdata.wind.speed) km/h"
-        precipitation = "\(weather3Hdata.pop) %"
+        windSpeed = "\(Int(weather3Hdata.wind.speed)) km/h"
+        precipitation = "\(Int(weather3Hdata.pop * 100)) %"
     }
 }
 
