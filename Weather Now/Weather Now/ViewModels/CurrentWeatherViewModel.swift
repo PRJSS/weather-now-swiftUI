@@ -150,6 +150,7 @@ class CurrentWeatherViewModel: ObservableObject {
                     self.currentWeather = currentWeather
                 }
             } else {
+                print("2")
                 throw networkError.networkError
             }
         } else {
