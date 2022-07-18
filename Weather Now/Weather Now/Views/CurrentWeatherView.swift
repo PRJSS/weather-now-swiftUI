@@ -60,9 +60,3 @@ struct CurrentWeatherView: View {
         .padding()
     }
 }
-
-struct CurrentWeatherView_Previews: PreviewProvider {
-    static var previews: some View {
-        CurrentWeatherView(viewModel: CurrentWeatherViewModel(currentWeather: CurrentWeather()))
-    }
-}

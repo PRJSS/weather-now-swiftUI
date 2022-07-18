@@ -20,11 +20,9 @@ struct MainView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                //HERE
                 ForecastView(forecastWeatherViewModel: forecastWeatherViewModel, currentWeatherViewModel: currentWeatherViewModel)
-                .hidden(isForecastHide)
+                    .hidden(isForecastHide)
                 ProgressView("Looking for your forecast...").hidden(!isLoading)
-                
                 VStack(spacing: 30) {
                     Text("Something wrong with your \(errorText)").foregroundColor(.secondary)
                     Button("Refresh") {
@@ -35,7 +33,6 @@ struct MainView: View {
                     .buttonStyle(.borderedProminent)
                     .tint(.green)
                 }.hidden(!(isLocationErrorCatched || isNetworkErrorCatched))
-                
             }
             .navigationTitle(forecastWeatherViewModel.forecastWeather.cityName)
             .navigationBarTitleDisplayMode(.large)
