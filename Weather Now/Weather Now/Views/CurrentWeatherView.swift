@@ -11,7 +11,6 @@ struct CurrentWeatherView: View {
     @ObservedObject var viewModel: CurrentWeatherViewModel
     @State private var isSharePresented: Bool = false
     @State private var shareText: ShareText?
-    
     var body: some View {
         VStack(alignment: .center, spacing: 30) {
             VStack(alignment: .center, spacing: 10) {

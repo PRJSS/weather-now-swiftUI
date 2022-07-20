@@ -7,10 +7,10 @@
 
 import Foundation
 
-enum locationError: Error {
+enum LocationError: Error {
     case notFoundLocation
 }
 
-enum networkError: Error {
+enum NetworkError: Error {
     case networkError
 }

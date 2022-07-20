@@ -11,27 +11,20 @@ import CoreLocation
 class LocationManager: NSObject, CLLocationManagerDelegate {
     static let shared = LocationManager()
     @Published var location: CLLocationCoordinate2D?
-    
     let manager = CLLocationManager()
     override init() {
         super.init()
         manager.delegate = self
     }
-    
     func requestLocation() {
         manager.requestWhenInUseAuthorization()
         manager.desiredAccuracy = kCLLocationAccuracyReduced
         manager.startUpdatingLocation()
     }
-    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         location = locations.first?.coordinate
         manager.stopUpdatingLocation()
     }
-    
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
     }
-    
-    
-    
 }

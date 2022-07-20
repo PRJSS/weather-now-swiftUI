@@ -15,7 +15,8 @@ struct ActivityView: UIViewControllerRepresentable {
         return UIActivityViewController(activityItems: [text], applicationActivities: nil)
     }
 
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: UIViewControllerRepresentableContext<ActivityView>) {}
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: UIViewControllerRepresentableContext<ActivityView>) {
+    }
 }
 
 struct ShareText: Identifiable {

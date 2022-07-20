@@ -33,7 +33,7 @@ struct ForecastView: View {
                                     }
                                 }
                             }
-                        if (self.selectedRow == hour.id) {
+                        if self.selectedRow == hour.id {
                             HStack {
                                 Spacer()
                                 ForecastDetailsView(cloudness: hour.cloudness, windSpeed: hour.windSpeed, precipitation: hour.precipitation)

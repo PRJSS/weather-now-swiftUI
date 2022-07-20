@@ -14,7 +14,7 @@ class ForecastWeather: NSObject {
     init(forecastWeatherData: ForecastWeatherData) {
         cityName = forecastWeatherData.city.name
         days = []
-        ///needs to show CurrentWeatherView in first Section in List
+        // needs to show CurrentWeatherView in first Section in List
         days.append(WeatherDay(weather3h: Weather3H(weather3Hdata: forecastWeatherData.list[0])))
         var i = 1
         while i < forecastWeatherData.list.count {
@@ -27,7 +27,6 @@ class ForecastWeather: NSObject {
             i += 1
         }
     }
-    
     override init() {
         self.cityName = "Not Found"
         self.days = [WeatherDay]()
@@ -37,20 +36,16 @@ class ForecastWeather: NSObject {
 struct WeatherDay {
     var dayName: String
     var weather3HList: [Weather3H]
-    
     init(weather3h: Weather3H) {
         dayName = dateToDayName(dt: weather3h.date)
-        
         weather3HList = []
         weather3HList.append(weather3h)
     }
-    
     init (dayName: String) {
         self.dayName = dayName
         self.weather3HList = []
     }
 }
-
 
 struct Weather3H: Identifiable {
     var id: UUID
@@ -62,7 +57,6 @@ struct Weather3H: Identifiable {
     var cloudness: String
     var windSpeed: String
     var precipitation: String
-    
     init(weather3Hdata: ForecastWeatherData.List) {
         date = weather3Hdata.dt
         time = dateToTime(dt: weather3Hdata.dt)
@@ -70,41 +64,39 @@ struct Weather3H: Identifiable {
         temp = "\(Int(weather3Hdata.main.temp - 273.15))ºC"
         icon = iconFormatter(image: weather3Hdata.weather[0].icon)
         id = UUID()
-        
         cloudness = "\(weather3Hdata.clouds.all) %"
         windSpeed = "\(Int(weather3Hdata.wind.speed)) km/h"
         precipitation = "\(Int(weather3Hdata.pop * 100)) %"
     }
 }
 
-fileprivate func dateToDayName (dt: Int) -> String {
+private func dateToDayName (dt: Int) -> String {
     let timeResult = Double(dt)
     let date = Date(timeIntervalSince1970: timeResult)
     let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "EEEE" //Set date style
+    dateFormatter.dateFormat = "EEEE"
     dateFormatter.timeZone = .current
     let localDate = dateFormatter.string(from: date)
     return localDate
 }
 
-fileprivate func dateToTime (dt: Int) -> String {
+private func dateToTime (dt: Int) -> String {
     let timeResult = Double(dt)
     let date = Date(timeIntervalSince1970: timeResult)
     let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "HH:mm" //Set time style
+    dateFormatter.dateFormat = "HH:mm"
     dateFormatter.timeZone = .current
     let localDate = dateFormatter.string(from: date)
     return localDate
 }
 
-fileprivate func isFromOneDay (dt1: Int, dt2: Int) -> Bool {
+private func isFromOneDay (dt1: Int, dt2: Int) -> Bool {
     let date1 = Date(timeIntervalSince1970: Double(dt1))
-    let date2 = Date(timeIntervalSince1970:  Double(dt2))
-    
+    let date2 = Date(timeIntervalSince1970: Double(dt2))
     return Calendar.current.isDate(date1, inSameDayAs: date2)
 }
 
-fileprivate func iconFormatter (image: String) -> String {
+private func iconFormatter (image: String) -> String {
     switch image {
     case "01d":
         return "sun.max"
@@ -124,7 +116,6 @@ fileprivate func iconFormatter (image: String) -> String {
         return "snowflake"
     case "50d":
         return "cloud.fog"
-        
     case "01n":
         return "moon"
     case "02n":
@@ -143,9 +134,7 @@ fileprivate func iconFormatter (image: String) -> String {
         return "snowflake"
     case "50n":
         return "cloud.fog"
-        
     default:
         return "sun.max"
     }
 }
-

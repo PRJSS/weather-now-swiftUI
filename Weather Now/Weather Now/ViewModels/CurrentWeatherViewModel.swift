@@ -8,42 +8,31 @@
 import Foundation
 
 class CurrentWeatherViewModel: ObservableObject {
-    
     @Published var currentWeather: CurrentWeather
     @Published private var locationData: LocationData?
-    
     private var locationManager = LocationManager()
     private var weatherAPI = WeatherAPI()
-    
     var mainCondition: String {
         return currentWeather.main
     }
-    
     var location: String {
         return "\(currentWeather.cityName), \(currentWeather.countryName)"
     }
-    
     var temperature: String {
-        
         return "\(Int(currentWeather.temperature - 273.15))ºC"
     }
-    
     var pressure: String {
         return "\(Int(currentWeather.pressure)) hPa"
     }
-    
     var cloudiness: String {
         return "\(Int(currentWeather.cloudiness))%"
     }
-    
     var rain: String {
         return "\(currentWeather.rain) mm"
     }
-    
     var windSpeed: String {
         return "\(Int(currentWeather.windSpeed)) km/h"
     }
-    
     var windDeg: String {
         switch Int(currentWeather.windDeg) {
         case 0...11:
@@ -84,18 +73,16 @@ class CurrentWeatherViewModel: ObservableObject {
             return "NaN"
         }
     }
-    
     var date: String {
         let timeResult = Double(currentWeather.date)
         let date = Date(timeIntervalSince1970: timeResult)
         let dateFormatter = DateFormatter()
-        dateFormatter.timeStyle = DateFormatter.Style.medium //Set time style
-        dateFormatter.dateStyle = DateFormatter.Style.medium //Set date style
+        dateFormatter.timeStyle = DateFormatter.Style.medium
+        dateFormatter.dateStyle = DateFormatter.Style.medium
         dateFormatter.timeZone = .current
         let localDate = dateFormatter.string(from: date)
         return "\(localDate)"
     }
-    
     var image: String {
         let image = currentWeather.icon
         switch image {
@@ -117,7 +104,6 @@ class CurrentWeatherViewModel: ObservableObject {
             return "snowflake"
         case "50d":
             return "cloud.fog"
-            
         case "01n":
             return "moon"
         case "02n":
@@ -136,12 +122,10 @@ class CurrentWeatherViewModel: ObservableObject {
             return "snowflake"
         case "50n":
             return "cloud.fog"
-        
         default:
             return "sun.max"
         }
     }
-    
     func updateWeather() async throws {
         await updateLocation()
         if self.locationData?.longitude != nil {
@@ -151,26 +135,22 @@ class CurrentWeatherViewModel: ObservableObject {
                 }
             } else {
                 print("2")
-                throw networkError.networkError
+                throw NetworkError.networkError
             }
         } else {
-            throw locationError.notFoundLocation
+            throw LocationError.notFoundLocation
         }
     }
-    
     private func updateLocation() async {
         locationManager.manager.requestLocation()
-        let location = LocationData(latitude: locationManager.manager.location?.coordinate.latitude, longitude: locationManager.manager.location?.coordinate.longitude)
+        let location = LocationData(latitude: locationManager.manager.location?.coordinate.latitude,
+                                    longitude: locationManager.manager.location?.coordinate.longitude)
         self.locationData = location
     }
-    
     init(currentWeather: CurrentWeather) {
         self.currentWeather = currentWeather
     }
-    
     init() {
         self.currentWeather = CurrentWeather()
     }
 }
-
-

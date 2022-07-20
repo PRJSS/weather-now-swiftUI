@@ -8,7 +8,7 @@
 import XCTest
 @testable import Weather_Now
 
-class Weather_NowTests: XCTestCase {
+class WeatherNowTests: XCTestCase {
 
     func fetchWeather() async {
         let api = WeatherAPI()

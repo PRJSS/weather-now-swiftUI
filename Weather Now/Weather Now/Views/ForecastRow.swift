@@ -12,7 +12,6 @@ struct ForecastRow: View {
     var time: String
     var weather: String
     var temperature: String
-    
     var body: some View {
         HStack(alignment: .center, spacing: 20) {
             Image(systemName: icon).font(.system(size: 50))

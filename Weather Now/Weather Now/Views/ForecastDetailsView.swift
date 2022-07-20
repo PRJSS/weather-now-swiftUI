@@ -11,7 +11,6 @@ struct ForecastDetailsView: View {
         var cloudness: String
         var windSpeed: String
         var precipitation: String
-    
     var body: some View {
         HStack(spacing: 40) {
             VStack {

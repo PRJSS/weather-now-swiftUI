@@ -10,10 +10,8 @@ import Foundation
 class ForecastWeatherViewModel: ObservableObject {
     @Published var forecastWeather: ForecastWeather
     @Published private var locationData: LocationData?
-    
     private var locationManager = LocationManager()
     private var weatherAPI = WeatherAPI()
-    
     init() {
         self.forecastWeather = ForecastWeather()
     }
@@ -28,13 +26,12 @@ class ForecastWeatherViewModel: ObservableObject {
                 }
             } else {
                 print("1")
-                throw networkError.networkError
+                throw NetworkError.networkError
             }
         } else {
-            throw locationError.notFoundLocation
+            throw LocationError.notFoundLocation
         }
     }
-    
     private func updateLocation() async {
         locationManager.manager.requestLocation()
         let location = LocationData(latitude: locationManager.manager.location?.coordinate.latitude, longitude: locationManager.manager.location?.coordinate.longitude)

@@ -16,11 +16,11 @@ struct MainView: View {
     @State var isLocationErrorCatched = false
     @State var errorText: String = ""
     @Environment(\.scenePhase) var scenePhase
-    
     var body: some View {
         NavigationView {
             ZStack {
-                ForecastView(forecastWeatherViewModel: forecastWeatherViewModel, currentWeatherViewModel: currentWeatherViewModel)
+                ForecastView(forecastWeatherViewModel: forecastWeatherViewModel,
+                             currentWeatherViewModel: currentWeatherViewModel)
                     .hidden(isForecastHide)
                 ProgressView("Looking for your forecast...").hidden(!isLoading)
                 VStack(spacing: 30) {
@@ -50,36 +50,28 @@ struct MainView: View {
             }
         }
     }
-    
     func updateForecastAndWeather() async {
         isLocationErrorCatched = false
         isNetworkErrorCatched = false
         errorText = ""
         isLoading = true
         isForecastHide = true
-        
         do {
             try await forecastWeatherViewModel.updateForecast()
             try await currentWeatherViewModel.updateWeather()
-        } catch locationError.notFoundLocation {
+        } catch LocationError.notFoundLocation {
             isLocationErrorCatched = true
             isForecastHide = true
-        } catch networkError.networkError {
+        } catch NetworkError.networkError {
             isNetworkErrorCatched = true
             isForecastHide = true
         } catch {
         }
-        
-        if (isLocationErrorCatched || isNetworkErrorCatched) {
+        if isLocationErrorCatched || isNetworkErrorCatched {
             if isLocationErrorCatched { errorText.count == 0 ? (errorText += "location") : (errorText += " and location") }
             if isNetworkErrorCatched { errorText.count == 0 ? (errorText += "internet connection") : (errorText += " and internet connection") }
         }
-        
         isLoading = false
-        
         if !(isNetworkErrorCatched || isLocationErrorCatched) { isForecastHide = false }
     }
 }
-
-
-

@@ -19,7 +19,6 @@ struct CurrentWeather {
     var icon: String
     var main: String
     var date: Int
-    
     init(currentWeatherData: CurrentWeatherData) {
         cityName = currentWeatherData.name
         countryName = currentWeatherData.sys.country
@@ -27,20 +26,17 @@ struct CurrentWeather {
         pressure = currentWeatherData.main.pressure
         cloudiness = currentWeatherData.clouds.all
         main = currentWeatherData.weather[0].main
-        
         if currentWeatherData.rain != nil {
             rain = currentWeatherData.rain!.rain1h
         } else {
             rain = 0
         }
-        
         windSpeed = currentWeatherData.wind.speed
         windDeg = currentWeatherData.wind.deg
         icon = currentWeatherData.weather[0].icon
         date = currentWeatherData.dt
     }
-    
-    init(){
+    init() {
         cityName = "London"
         countryName = "UK"
         temperature = 290
