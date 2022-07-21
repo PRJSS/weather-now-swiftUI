@@ -9,7 +9,6 @@ import Foundation
 import CoreLocation
 
 class LocationManager: NSObject, CLLocationManagerDelegate {
-    static let shared = LocationManager()
     @Published var location: CLLocationCoordinate2D?
     let manager = CLLocationManager()
     override init() {
