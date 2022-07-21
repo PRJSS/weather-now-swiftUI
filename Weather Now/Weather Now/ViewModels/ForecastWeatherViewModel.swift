@@ -25,7 +25,6 @@ class ForecastWeatherViewModel: ObservableObject {
                     self.forecastWeather = forecastWeather
                 }
             } else {
-                print("1")
                 throw NetworkError.networkError
             }
         } else {

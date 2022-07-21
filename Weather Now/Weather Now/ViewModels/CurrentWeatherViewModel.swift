@@ -126,6 +126,7 @@ class CurrentWeatherViewModel: ObservableObject {
             return "sun.max"
         }
     }
+
     func updateWeather() async throws {
         await updateLocation()
         if self.locationData?.longitude != nil {
@@ -134,13 +135,13 @@ class CurrentWeatherViewModel: ObservableObject {
                     self.currentWeather = currentWeather
                 }
             } else {
-                print("2")
                 throw NetworkError.networkError
             }
         } else {
             throw LocationError.notFoundLocation
         }
     }
+
     private func updateLocation() async {
         locationManager.manager.requestLocation()
         let location = LocationData(latitude: locationManager.manager.location?.coordinate.latitude,

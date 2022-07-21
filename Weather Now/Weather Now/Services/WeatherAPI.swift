@@ -11,44 +11,32 @@ import CoreLocation
 final class WeatherAPI {
     private static let networkManager = NetworkManager()
     func getForecastWeather(latitude lat: Double, longitude lon: Double) async -> ForecastWeather? {
-        guard let forecast = await WeatherAPI.networkManager.fetchWeather(latitude: lat, longitude: lon, requestType: .forecast) as? ForecastWeather else {
-            return nil
-        }
-        return forecast
+        await WeatherAPI.networkManager.fetchWeather(latitude: lat, longitude: lon, requestType: .forecast) as? ForecastWeather
     }
     func getCurrentWeather(latitude lat: Double, longitude lon: Double) async -> CurrentWeather? {
-        guard let current = await WeatherAPI.networkManager.fetchWeather(latitude: lat, longitude: lon, requestType: .current) as? CurrentWeather else {
-            return nil
-        }
-        return current
+        await WeatherAPI.networkManager.fetchWeather(latitude: lat, longitude: lon, requestType: .weather) as? CurrentWeather
     }
 }
-
 struct NetworkManager {
-    enum RequestType {
+    enum RequestType: String {
         case forecast
-        case current
+        case weather
     }
     func fetchWeather(latitude lat: Double, longitude lon: Double, requestType: RequestType) async -> Any? {
-        switch requestType {
-        case .forecast:
-            guard  let url = URL(string: "https://api.openweathermap.org/data/2.5/forecast?lat=\(lat)&lon=\(lon)&appid=\(Constants.apiKey)") else { return nil }
-            do {
-                let (data, _) = try await URLSession.shared.data(from: url)
+        guard let url = URL(string: "https://api.openweathermap.org/data/2.5/\(requestType.rawValue)?lat=\(lat)&lon=\(lon)&appid=\(Constants.apiKey)") else { return nil }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            switch requestType {
+            case .forecast:
                 if let decodedResponse = try? JSONDecoder().decode(ForecastWeatherData.self, from: data) {
                     return ForecastWeather(forecastWeatherData: decodedResponse)
                 }
-            } catch { }
-            return nil
-        case .current:
-            guard  let url = URL(string: "https://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)&appid=\(Constants.apiKey)") else { return nil }
-            do {
-                let (data, _) = try await URLSession.shared.data(from: url)
+            case .weather:
                 if let decodedResponse = try? JSONDecoder().decode(CurrentWeatherData.self, from: data) {
                     return CurrentWeather(currentWeatherData: decodedResponse)
                 }
-            } catch { }
-            return nil
-        }
+            }
+        } catch { }
+        return nil
     }
 }
