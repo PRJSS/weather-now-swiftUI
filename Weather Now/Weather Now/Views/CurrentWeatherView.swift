@@ -53,7 +53,7 @@ struct CurrentWeatherView: View {
                     ActivityView(text: shareText.text)
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.gray)
+                .tint(Color("gray"))
             }
         }
         .padding()

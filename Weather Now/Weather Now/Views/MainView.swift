@@ -62,14 +62,14 @@ struct MainView: View {
                          currentWeatherViewModel: currentWeatherViewModel)
         case .error:
             VStack(spacing: 30) {
-                Text("Something wrong with your \(errorText)").foregroundColor(.secondary)
+                Text("Something wrong with your \(errorText)").foregroundColor(Color("secondary"))
                 Button("Refresh") {
                     Task {
                         await updateForecastAndWeather()
                     }
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.green)
+                .tint(Color("green"))
             }
         }
     }
