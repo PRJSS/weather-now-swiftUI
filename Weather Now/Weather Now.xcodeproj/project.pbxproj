@@ -29,7 +29,6 @@
 		65E6BAA0287F585E00B25D74 /* WeatherAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E6BA9F287F585E00B25D74 /* WeatherAPI.swift */; };
 		65E6BAA2287F587100B25D74 /* ForecastWeatherData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E6BAA1287F587100B25D74 /* ForecastWeatherData.swift */; };
 		65E6BAA4287F590900B25D74 /* canGetLocationProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E6BAA3287F590900B25D74 /* canGetLocationProtocol.swift */; };
-		65E6BAA6287F591600B25D74 /* LocationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E6BAA5287F591600B25D74 /* LocationData.swift */; };
 		65F2A444288070BB006AE001 /* ForecastWeatherViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F2A443288070BA006AE001 /* ForecastWeatherViewModel.swift */; };
 		65F2A44628807958006AE001 /* WeatherNowApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F2A44528807958006AE001 /* WeatherNowApp.swift */; };
 /* End PBXBuildFile section */
@@ -78,7 +77,6 @@
 		65E6BA9F287F585E00B25D74 /* WeatherAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherAPI.swift; sourceTree = "<group>"; };
 		65E6BAA1287F587100B25D74 /* ForecastWeatherData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastWeatherData.swift; sourceTree = "<group>"; };
 		65E6BAA3287F590900B25D74 /* canGetLocationProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = canGetLocationProtocol.swift; sourceTree = "<group>"; };
-		65E6BAA5287F591600B25D74 /* LocationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationData.swift; sourceTree = "<group>"; };
 		65F2A443288070BA006AE001 /* ForecastWeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastWeatherViewModel.swift; sourceTree = "<group>"; };
 		65F2A44528807958006AE001 /* WeatherNowApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeatherNowApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -214,7 +212,6 @@
 			children = (
 				657AFC16287F521900545AEA /* Constants.swift */,
 				65E6BAA1287F587100B25D74 /* ForecastWeatherData.swift */,
-				65E6BAA5287F591600B25D74 /* LocationData.swift */,
 				65D54F1728831803002B7657 /* CurrentWeatherData.swift */,
 				652A591F288A8DE600849F58 /* WeatherDay.swift */,
 				652A5924288AB43E00849F58 /* Weather3H.swift */,
@@ -404,7 +401,6 @@
 				65628BEF2883AF7C00974412 /* ForecastView.swift in Sources */,
 				657AFC15287F4FD400545AEA /* MainView.swift in Sources */,
 				652A5925288AB43E00849F58 /* Weather3H.swift in Sources */,
-				65E6BAA6287F591600B25D74 /* LocationData.swift in Sources */,
 				6524B54428836F0A007C7F20 /* ActivityViewController.swift in Sources */,
 				6562140A28835A4D0001BDCF /* Errors.swift in Sources */,
 				65D54F162882325A002B7657 /* ForecastDetailsView.swift in Sources */,

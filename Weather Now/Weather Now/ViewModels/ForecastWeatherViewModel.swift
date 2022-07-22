@@ -9,10 +9,9 @@ import Foundation
 import CoreLocation
 
 class ForecastWeatherViewModel: NSObject, ObservableObject, canGetLocation {
-    @Published var location: CLLocationCoordinate2D?
-    var locationManager = CLLocationManager()
     @Published var forecastWeatherData: ForecastWeatherData?
-    @Published private var locationData: LocationData?
+    @Published private var locationData: CLLocationCoordinate2D?
+    var locationManager = CLLocationManager()
     private var weatherAPI = WeatherAPI()
     var cityName: String {
         return forecastWeatherData?.city.name ?? "Not Found"
@@ -25,32 +24,21 @@ class ForecastWeatherViewModel: NSObject, ObservableObject, canGetLocation {
         locationManager.startUpdatingLocation()
     }
 
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        location = locations.first?.coordinate
-        locationManager.stopUpdatingLocation()
-    }
-
     func updateForecast() async throws {
         await updateLocation()
-        if self.locationData?.longitude != nil {
-            if let forecastWeatherData = await weatherAPI.getForecastWeather(latitude: self.locationData!.latitude!,
-                                                                             longitude: self.locationData!.longitude!) {
-                setDays(forecastWeatherData: forecastWeatherData)
-                DispatchQueue.main.async {
-                    self.forecastWeatherData = forecastWeatherData
-                }
-            } else {
-                throw NetworkError.networkError
-            }
-        } else {
-            throw LocationError.notFoundLocation
+        guard let location = locationData else { throw LocationError.notFoundLocation }
+        guard let forecastWeatherData = await weatherAPI.getForecastWeather(latitude: location.latitude,
+                                                                            longitude: location.longitude)
+        else { throw NetworkError.networkError }
+        setDays(forecastWeatherData: forecastWeatherData)
+        DispatchQueue.main.async {
+            self.forecastWeatherData = forecastWeatherData
         }
     }
 
     private func updateLocation() async {
         locationManager.requestLocation()
-        let location = LocationData(latitude: locationManager.location?.coordinate.latitude, longitude: locationManager.location?.coordinate.longitude)
-        self.locationData = location
+        self.locationData = locationManager.location?.coordinate
     }
 
     private func setDays(forecastWeatherData: ForecastWeatherData) {
@@ -76,8 +64,12 @@ class ForecastWeatherViewModel: NSObject, ObservableObject, canGetLocation {
         return Calendar.current.isDate(date1, inSameDayAs: date2)
     }
 
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        locationManager.stopUpdatingLocation()
+    }
+
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        }
+    }
 
     override init() {
         super.init()

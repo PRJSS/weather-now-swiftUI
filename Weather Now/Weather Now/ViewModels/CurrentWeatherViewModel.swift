@@ -10,27 +10,15 @@ import CoreLocation
 
 class CurrentWeatherViewModel: NSObject, ObservableObject, canGetLocation {
 
-    @Published var location: CLLocationCoordinate2D?
     var locationManager = CLLocationManager()
-    func requestLocation() {
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.desiredAccuracy = kCLLocationAccuracyReduced
-        locationManager.startUpdatingLocation()
-    }
-
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        location = locations.first?.coordinate
-        locationManager.stopUpdatingLocation()
-    }
-
     @Published var currentWeatherData: CurrentWeatherData?
-    @Published private var locationData: LocationData?
+    @Published private var locationData: CLLocationCoordinate2D?
     private var weatherAPI = WeatherAPI()
     var mainCondition: String {
         return currentWeatherData?.weather[0].main ?? "Sunny"
     }
     var locationInfo: String {
-        return "\(currentWeatherData?.name ?? "London"),\(currentWeatherData?.sys.country ?? "UK")"
+        return "\(currentWeatherData?.name ?? "London"), \(currentWeatherData?.sys.country ?? "UK")"
     }
     var temperature: String {
         return "\(Int((currentWeatherData?.main.temp ?? 290) - 273.15))ºC"
@@ -142,33 +130,40 @@ class CurrentWeatherViewModel: NSObject, ObservableObject, canGetLocation {
         }
     }
 
+    func requestLocation() {
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.desiredAccuracy = kCLLocationAccuracyReduced
+        locationManager.startUpdatingLocation()
+    }
+
     func updateWeather() async throws {
         await updateLocation()
-        if self.locationData?.longitude != nil {
-            if let currentWeatherData = await weatherAPI.getCurrentWeather(latitude: self.locationData!.latitude!, longitude: self.locationData!.longitude!) {
+        guard let location = locationData else { throw LocationError.notFoundLocation }
+            guard let currentWeatherData = await weatherAPI.getCurrentWeather(latitude: location.latitude,
+                                                                              longitude: location.longitude)
+        else { throw NetworkError.networkError }
                 DispatchQueue.main.async {
                     self.currentWeatherData = currentWeatherData
                 }
-            } else {
-                throw NetworkError.networkError
-            }
-        } else {
-            throw LocationError.notFoundLocation
-        }
     }
 
     private func updateLocation() async {
         locationManager.requestLocation()
-        let location = LocationData(latitude: locationManager.location?.coordinate.latitude,
-                                    longitude: locationManager.location?.coordinate.longitude)
-        self.locationData = location
+        self.locationData = locationManager.location?.coordinate
     }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        locationManager.stopUpdatingLocation()
+    }
+
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         }
+
     override init() {
         super.init()
         locationManager.delegate = self
     }
+
     init(currentWeatherData: CurrentWeatherData) {
         self.currentWeatherData = currentWeatherData
     }

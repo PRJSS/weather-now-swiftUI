@@ -9,7 +9,6 @@ import Foundation
 import CoreLocation
 
 protocol canGetLocation: CLLocationManagerDelegate {
-    var location: CLLocationCoordinate2D? { get set }
     var locationManager: CLLocationManager { get set }
     func requestLocation()
 }
