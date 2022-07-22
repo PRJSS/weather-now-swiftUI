@@ -10,11 +10,11 @@ import CoreLocation
 
 final class WeatherAPI {
     private static let networkManager = NetworkManager()
-    func getForecastWeather(latitude lat: Double, longitude lon: Double) async -> ForecastWeather? {
-        await WeatherAPI.networkManager.fetchWeather(latitude: lat, longitude: lon, requestType: .forecast) as? ForecastWeather
+    func getForecastWeather(latitude lat: Double, longitude lon: Double) async -> ForecastWeatherData? {
+        await WeatherAPI.networkManager.fetchWeather(latitude: lat, longitude: lon, requestType: .forecast) as? ForecastWeatherData
     }
-    func getCurrentWeather(latitude lat: Double, longitude lon: Double) async -> CurrentWeather? {
-        await WeatherAPI.networkManager.fetchWeather(latitude: lat, longitude: lon, requestType: .weather) as? CurrentWeather
+    func getCurrentWeather(latitude lat: Double, longitude lon: Double) async -> CurrentWeatherData? {
+        await WeatherAPI.networkManager.fetchWeather(latitude: lat, longitude: lon, requestType: .weather) as? CurrentWeatherData
     }
 }
 struct NetworkManager {
@@ -29,11 +29,11 @@ struct NetworkManager {
             switch requestType {
             case .forecast:
                 if let decodedResponse = try? JSONDecoder().decode(ForecastWeatherData.self, from: data) {
-                    return ForecastWeather(forecastWeatherData: decodedResponse)
+                    return decodedResponse
                 }
             case .weather:
                 if let decodedResponse = try? JSONDecoder().decode(CurrentWeatherData.self, from: data) {
-                    return CurrentWeather(currentWeatherData: decodedResponse)
+                    return decodedResponse
                 }
             }
         } catch { }

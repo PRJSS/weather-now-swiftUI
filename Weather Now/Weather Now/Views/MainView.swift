@@ -34,7 +34,7 @@ struct MainView: View {
                     .tint(.green)
                 }.hidden(!(isLocationErrorCatched || isNetworkErrorCatched))
             }
-            .navigationTitle(forecastWeatherViewModel.forecastWeather.cityName)
+            .navigationTitle(forecastWeatherViewModel.cityName)
             .navigationBarTitleDisplayMode(.large)
         }
         .onAppear {
@@ -59,6 +59,7 @@ struct MainView: View {
         do {
             try await forecastWeatherViewModel.updateForecast()
             try await currentWeatherViewModel.updateWeather()
+            print(forecastWeatherViewModel.days)
         } catch LocationError.notFoundLocation {
             isLocationErrorCatched = true
             isForecastHide = true
