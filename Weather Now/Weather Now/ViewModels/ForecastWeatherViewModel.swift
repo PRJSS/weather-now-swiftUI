@@ -6,11 +6,24 @@
 //
 
 import Foundation
+import CoreLocation
 
-class ForecastWeatherViewModel: ObservableObject {
+class ForecastWeatherViewModel: NSObject, ObservableObject, canGetLocation {
+    @Published var location: CLLocationCoordinate2D?
+    var locationManager = CLLocationManager()
+    func requestLocation() {
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.desiredAccuracy = kCLLocationAccuracyReduced
+        locationManager.startUpdatingLocation()
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        location = locations.first?.coordinate
+        locationManager.stopUpdatingLocation()
+    }
+
     @Published var forecastWeatherData: ForecastWeatherData?
     @Published private var locationData: LocationData?
-    private var locationManager = LocationManager()
     private var weatherAPI = WeatherAPI()
     var cityName: String {
         return forecastWeatherData?.city.name ?? "Not Found"
@@ -33,8 +46,8 @@ class ForecastWeatherViewModel: ObservableObject {
         }
     }
     private func updateLocation() async {
-        locationManager.manager.requestLocation()
-        let location = LocationData(latitude: locationManager.manager.location?.coordinate.latitude, longitude: locationManager.manager.location?.coordinate.longitude)
+        locationManager.requestLocation()
+        let location = LocationData(latitude: locationManager.location?.coordinate.latitude, longitude: locationManager.location?.coordinate.longitude)
         self.locationData = location
     }
     private func setDays() {
@@ -61,5 +74,11 @@ class ForecastWeatherViewModel: ObservableObject {
         let date1 = Date(timeIntervalSince1970: Double(dt1))
         let date2 = Date(timeIntervalSince1970: Double(dt2))
         return Calendar.current.isDate(date1, inSameDayAs: date2)
+    }
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        }
+    override init() {
+        super.init()
+        locationManager.delegate = self
     }
 }

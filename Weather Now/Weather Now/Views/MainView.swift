@@ -59,7 +59,6 @@ struct MainView: View {
         do {
             try await forecastWeatherViewModel.updateForecast()
             try await currentWeatherViewModel.updateWeather()
-            print(forecastWeatherViewModel.days)
         } catch LocationError.notFoundLocation {
             isLocationErrorCatched = true
             isForecastHide = true

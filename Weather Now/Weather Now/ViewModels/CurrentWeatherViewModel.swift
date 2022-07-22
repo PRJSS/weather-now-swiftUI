@@ -6,16 +6,30 @@
 //
 
 import Foundation
+import CoreLocation
 
-class CurrentWeatherViewModel: ObservableObject {
+class CurrentWeatherViewModel: NSObject, ObservableObject, canGetLocation {
+
+    @Published var location: CLLocationCoordinate2D?
+    var locationManager = CLLocationManager()
+    func requestLocation() {
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.desiredAccuracy = kCLLocationAccuracyReduced
+        locationManager.startUpdatingLocation()
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        location = locations.first?.coordinate
+        locationManager.stopUpdatingLocation()
+    }
+
     @Published var currentWeatherData: CurrentWeatherData?
     @Published private var locationData: LocationData?
-    private var locationManager = LocationManager()
     private var weatherAPI = WeatherAPI()
     var mainCondition: String {
         return currentWeatherData?.weather[0].main ?? "Sunny"
     }
-    var location: String {
+    var locationInfo: String {
         return "\(currentWeatherData?.name ?? "London"),\(currentWeatherData?.sys.country ?? "UK")"
     }
     var temperature: String {
@@ -144,14 +158,18 @@ class CurrentWeatherViewModel: ObservableObject {
     }
 
     private func updateLocation() async {
-        locationManager.manager.requestLocation()
-        let location = LocationData(latitude: locationManager.manager.location?.coordinate.latitude,
-                                    longitude: locationManager.manager.location?.coordinate.longitude)
+        locationManager.requestLocation()
+        let location = LocationData(latitude: locationManager.location?.coordinate.latitude,
+                                    longitude: locationManager.location?.coordinate.longitude)
         self.locationData = location
+    }
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        }
+    override init() {
+        super.init()
+        locationManager.delegate = self
     }
     init(currentWeatherData: CurrentWeatherData) {
         self.currentWeatherData = currentWeatherData
-    }
-    init() {
     }
 }
