@@ -1,0 +1,8 @@
+/* Bundle name */
+"CFBundleName" = "Weather Now";
+/* Privacy - Access to a File Provide Domain Usage Description */
+"NSFileProviderDomainUsageDescription" = "";
+/* Privacy - Location Always and When In Use Usage Description */
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "";
+/* Privacy - Location When In Use Usage Description */
+"NSLocationWhenInUseUsageDescription" = "We need your location to provide local weather and forecast";
