@@ -11,6 +11,14 @@ import CoreLocation
 class ForecastWeatherViewModel: NSObject, ObservableObject, canGetLocation {
     @Published var location: CLLocationCoordinate2D?
     var locationManager = CLLocationManager()
+    @Published var forecastWeatherData: ForecastWeatherData?
+    @Published private var locationData: LocationData?
+    private var weatherAPI = WeatherAPI()
+    var cityName: String {
+        return forecastWeatherData?.city.name ?? "Not Found"
+    }
+    var days: [WeatherDay] = []
+
     func requestLocation() {
         locationManager.requestWhenInUseAuthorization()
         locationManager.desiredAccuracy = kCLLocationAccuracyReduced
@@ -22,19 +30,12 @@ class ForecastWeatherViewModel: NSObject, ObservableObject, canGetLocation {
         locationManager.stopUpdatingLocation()
     }
 
-    @Published var forecastWeatherData: ForecastWeatherData?
-    @Published private var locationData: LocationData?
-    private var weatherAPI = WeatherAPI()
-    var cityName: String {
-        return forecastWeatherData?.city.name ?? "Not Found"
-    }
-    var days: [WeatherDay] = []
-
     func updateForecast() async throws {
         await updateLocation()
         if self.locationData?.longitude != nil {
-            if let forecastWeatherData = await weatherAPI.getForecastWeather(latitude: self.locationData!.latitude!, longitude: self.locationData!.longitude!) {
-                setDays()
+            if let forecastWeatherData = await weatherAPI.getForecastWeather(latitude: self.locationData!.latitude!,
+                                                                             longitude: self.locationData!.longitude!) {
+                setDays(forecastWeatherData: forecastWeatherData)
                 DispatchQueue.main.async {
                     self.forecastWeatherData = forecastWeatherData
                 }
@@ -45,22 +46,20 @@ class ForecastWeatherViewModel: NSObject, ObservableObject, canGetLocation {
             throw LocationError.notFoundLocation
         }
     }
+
     private func updateLocation() async {
         locationManager.requestLocation()
         let location = LocationData(latitude: locationManager.location?.coordinate.latitude, longitude: locationManager.location?.coordinate.longitude)
         self.locationData = location
     }
-    private func setDays() {
+
+    private func setDays(forecastWeatherData: ForecastWeatherData) {
         var days: [WeatherDay] = []
         days.insert(WeatherDay(dayName: "Current"), at: 0)
-        guard let forecastWeather = forecastWeatherData else {
-            self.days = days
-            return
-        }
-        days.append(WeatherDay(weather3h: Weather3H(weather3Hdata: forecastWeather.list[0])))
+        days.append(WeatherDay(weather3h: Weather3H(weather3Hdata: forecastWeatherData.list[0])))
         var i = 1
-        while i < forecastWeather.list.count {
-            let weather3h = Weather3H(weather3Hdata: forecastWeather.list[i])
+        while i < forecastWeatherData.list.count {
+            let weather3h = Weather3H(weather3Hdata: forecastWeatherData.list[i])
             if isFromOneDay(dt1: days[days.count - 1].weather3HList[0].date, dt2: weather3h.date) {
                 days[days.count - 1].weather3HList.append(weather3h)
             } else {
@@ -70,13 +69,16 @@ class ForecastWeatherViewModel: NSObject, ObservableObject, canGetLocation {
         }
         self.days = days
     }
-    func isFromOneDay (dt1: Int, dt2: Int) -> Bool {
+
+    private func isFromOneDay (dt1: Int, dt2: Int) -> Bool {
         let date1 = Date(timeIntervalSince1970: Double(dt1))
         let date2 = Date(timeIntervalSince1970: Double(dt2))
         return Calendar.current.isDate(date1, inSameDayAs: date2)
     }
+
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         }
+
     override init() {
         super.init()
         locationManager.delegate = self

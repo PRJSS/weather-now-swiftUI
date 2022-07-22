@@ -37,11 +37,6 @@ struct MainView: View {
             .navigationTitle(forecastWeatherViewModel.cityName)
             .navigationBarTitleDisplayMode(.large)
         }
-        .onAppear {
-            Task {
-                await updateForecastAndWeather()
-            }
-        }
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
                 Task {
