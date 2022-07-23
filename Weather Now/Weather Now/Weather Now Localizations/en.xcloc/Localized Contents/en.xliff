@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 http://docs.oasis-open.org/xliff/v1.2/os/xliff-core-1.2-strict.xsd">
+  <file original="en.lproj/Localizable.strings" source-language="en" target-language="en" datatype="plaintext">
+    <header>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="13.3" build-num="13E113"/>
+    </header>
+    <body>
+      <trans-unit id="%@ | %@" xml:space="preserve">
+        <source>%@ | %@</source>
+        <target>%@ | %@</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Looking for your forecast..." xml:space="preserve">
+        <source>Looking for your forecast...</source>
+        <target>Looking for your forecast...</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Refresh" xml:space="preserve">
+        <source>Refresh</source>
+        <target>Refresh</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Share" xml:space="preserve">
+        <source>Share</source>
+        <target>Share</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+      <trans-unit id="Something wrong with your %@" xml:space="preserve">
+        <source>Something wrong with your %@</source>
+        <target>Something wrong with your %@</target>
+        <note>No comment provided by engineer.</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="en.lproj/Weather-Now-InfoPlist.strings" source-language="en" target-language="en" datatype="plaintext">
+    <header>
+      <tool tool-id="com.apple.dt.xcode" tool-name="Xcode" tool-version="13.3" build-num="13E113"/>
+    </header>
+    <body>
+      <trans-unit id="CFBundleName" xml:space="preserve">
+        <source>Weather Now</source>
+        <target>Weather Now</target>
+        <note>Bundle name</note>
+      </trans-unit>
+      <trans-unit id="NSFileProviderDomainUsageDescription" xml:space="preserve">
+        <source/>
+        <target/>
+        <note>Privacy - Access to a File Provide Domain Usage Description</note>
+      </trans-unit>
+      <trans-unit id="NSLocationAlwaysAndWhenInUseUsageDescription" xml:space="preserve">
+        <source/>
+        <target/>
+        <note>Privacy - Location Always and When In Use Usage Description</note>
+      </trans-unit>
+      <trans-unit id="NSLocationWhenInUseUsageDescription" xml:space="preserve">
+        <source>We need your location to provide local weather and forecast</source>
+        <target>We need your location to provide local weather and forecast</target>
+        <note>Privacy - Location When In Use Usage Description</note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

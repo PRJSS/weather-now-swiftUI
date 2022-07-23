@@ -6,35 +6,38 @@
 //
 
 import Foundation
+import CoreLocation
 
-class CurrentWeatherViewModel: ObservableObject {
-    @Published var currentWeather: CurrentWeather
-    @Published private var locationData: LocationData?
-    private var locationManager = LocationManager()
+class CurrentWeatherViewModel: NSObject, ObservableObject, canGetLocation {
+
+    var locationManager = CLLocationManager()
+    @Published var currentWeatherData: CurrentWeatherData?
+    @Published private var locationData: CLLocationCoordinate2D?
     private var weatherAPI = WeatherAPI()
     var mainCondition: String {
-        return currentWeather.main
+        return currentWeatherData?.weather[0].main ?? "Sunny"
     }
-    var location: String {
-        return "\(currentWeather.cityName), \(currentWeather.countryName)"
+    var locationInfo: String {
+        return "\(currentWeatherData?.name ?? "London"), \(currentWeatherData?.sys.country ?? "UK")"
     }
     var temperature: String {
-        return "\(Int(currentWeather.temperature - 273.15))ºC"
+        return "\(Int((currentWeatherData?.main.temp ?? 290) - 273.15))ºC"
     }
     var pressure: String {
-        return "\(Int(currentWeather.pressure)) hPa"
+        return "\(Int(currentWeatherData?.main.pressure ?? 1019)) hPa"
     }
     var cloudiness: String {
-        return "\(Int(currentWeather.cloudiness))%"
+        return "\(Int(currentWeatherData?.clouds.all ?? 57))%"
     }
     var rain: String {
-        return "\(currentWeather.rain) mm"
+        guard let rainData = currentWeatherData?.rain else { return "0 mm" }
+        return "\(rainData.rain1h) mm"
     }
     var windSpeed: String {
-        return "\(Int(currentWeather.windSpeed)) km/h"
+        return "\(Int(currentWeatherData?.wind.speed ?? 0)) km/h"
     }
     var windDeg: String {
-        switch Int(currentWeather.windDeg) {
+        switch Int(currentWeatherData?.wind.deg ?? 145) {
         case 0...11:
             return "N"
         case 350...365:
@@ -74,7 +77,7 @@ class CurrentWeatherViewModel: ObservableObject {
         }
     }
     var date: String {
-        let timeResult = Double(currentWeather.date)
+        let timeResult = Double(currentWeatherData?.dt ?? 1560350645)
         let date = Date(timeIntervalSince1970: timeResult)
         let dateFormatter = DateFormatter()
         dateFormatter.timeStyle = DateFormatter.Style.medium
@@ -84,7 +87,7 @@ class CurrentWeatherViewModel: ObservableObject {
         return "\(localDate)"
     }
     var image: String {
-        let image = currentWeather.icon
+        let image = currentWeatherData?.weather[0].icon ?? "01d"
         switch image {
         case "01d":
             return "sun.max"
@@ -126,31 +129,42 @@ class CurrentWeatherViewModel: ObservableObject {
             return "sun.max"
         }
     }
+
+    func requestLocation() {
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.desiredAccuracy = kCLLocationAccuracyReduced
+        locationManager.startUpdatingLocation()
+    }
+
     func updateWeather() async throws {
         await updateLocation()
-        if self.locationData?.longitude != nil {
-            if let currentWeather = await weatherAPI.getCurrentWeather(latitude: self.locationData!.latitude!, longitude: self.locationData!.longitude!) {
+        guard let location = locationData else { throw LocationError.notFoundLocation }
+            guard let currentWeatherData = await weatherAPI.getCurrentWeather(latitude: location.latitude,
+                                                                              longitude: location.longitude)
+        else { throw NetworkError.networkError }
                 DispatchQueue.main.async {
-                    self.currentWeather = currentWeather
+                    self.currentWeatherData = currentWeatherData
                 }
-            } else {
-                print("2")
-                throw NetworkError.networkError
-            }
-        } else {
-            throw LocationError.notFoundLocation
-        }
     }
+
     private func updateLocation() async {
-        locationManager.manager.requestLocation()
-        let location = LocationData(latitude: locationManager.manager.location?.coordinate.latitude,
-                                    longitude: locationManager.manager.location?.coordinate.longitude)
-        self.locationData = location
+        locationManager.requestLocation()
+        self.locationData = locationManager.location?.coordinate
     }
-    init(currentWeather: CurrentWeather) {
-        self.currentWeather = currentWeather
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        locationManager.stopUpdatingLocation()
     }
-    init() {
-        self.currentWeather = CurrentWeather()
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        }
+
+    override init() {
+        super.init()
+        locationManager.delegate = self
+    }
+
+    init(currentWeatherData: CurrentWeatherData) {
+        self.currentWeatherData = currentWeatherData
     }
 }

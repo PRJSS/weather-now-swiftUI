@@ -13,7 +13,7 @@ struct ForecastView: View {
     @State var selectedRow: UUID?
 
     var body: some View {
-        List(forecastWeatherViewModel.forecastWeather.days, id: \.dayName) { day in
+        List(forecastWeatherViewModel.days, id: \.dayName) { day in
             if day.dayName == "Current" {
                 HStack {
                     Spacer()
@@ -26,14 +26,14 @@ struct ForecastView: View {
                         ForecastRow(icon: hour.icon, time: hour.time, weather: hour.main, temperature: hour.temp)
                             .onTapGesture {
                                 withAnimation {
-                                    if self.selectedRow == hour.id {
-                                        self.selectedRow = nil
+                                    if selectedRow == hour.id {
+                                        selectedRow = nil
                                     } else {
-                                        self.selectedRow = hour.id
+                                        selectedRow = hour.id
                                     }
                                 }
                             }
-                        if self.selectedRow == hour.id {
+                        if selectedRow == hour.id {
                             HStack {
                                 Spacer()
                                 ForecastDetailsView(cloudness: hour.cloudness, windSpeed: hour.windSpeed, precipitation: hour.precipitation)

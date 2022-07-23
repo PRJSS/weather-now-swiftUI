@@ -6,35 +6,73 @@
 //
 
 import Foundation
+import CoreLocation
 
-class ForecastWeatherViewModel: ObservableObject {
-    @Published var forecastWeather: ForecastWeather
-    @Published private var locationData: LocationData?
-    private var locationManager = LocationManager()
+class ForecastWeatherViewModel: NSObject, ObservableObject, canGetLocation {
+    @Published var forecastWeatherData: ForecastWeatherData?
+    @Published private var locationData: CLLocationCoordinate2D?
+    var locationManager = CLLocationManager()
     private var weatherAPI = WeatherAPI()
-    init() {
-        self.forecastWeather = ForecastWeather()
+    var cityName: String {
+        return forecastWeatherData?.city.name ?? "Not Found"
+    }
+    var days: [WeatherDay] = []
+
+    func requestLocation() {
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.desiredAccuracy = kCLLocationAccuracyReduced
+        locationManager.startUpdatingLocation()
     }
 
     func updateForecast() async throws {
         await updateLocation()
-        if self.locationData?.longitude != nil {
-            if let forecastWeather = await weatherAPI.getForecastWeather(latitude: self.locationData!.latitude!, longitude: self.locationData!.longitude!) {
-                forecastWeather.days.insert(WeatherDay(dayName: "Current"), at: 0)
-                DispatchQueue.main.async {
-                    self.forecastWeather = forecastWeather
-                }
-            } else {
-                print("1")
-                throw NetworkError.networkError
-            }
-        } else {
-            throw LocationError.notFoundLocation
+        guard let location = locationData else { throw LocationError.notFoundLocation }
+        guard let forecastWeatherData = await weatherAPI.getForecastWeather(latitude: location.latitude,
+                                                                            longitude: location.longitude)
+        else { throw NetworkError.networkError }
+        setDays(forecastWeatherData: forecastWeatherData)
+        DispatchQueue.main.async {
+            self.forecastWeatherData = forecastWeatherData
         }
     }
+
     private func updateLocation() async {
-        locationManager.manager.requestLocation()
-        let location = LocationData(latitude: locationManager.manager.location?.coordinate.latitude, longitude: locationManager.manager.location?.coordinate.longitude)
-        self.locationData = location
+        locationManager.requestLocation()
+        self.locationData = locationManager.location?.coordinate
+    }
+
+    private func setDays(forecastWeatherData: ForecastWeatherData) {
+        var days: [WeatherDay] = []
+        days.insert(WeatherDay(dayName: "Current"), at: 0)
+        days.append(WeatherDay(weather3h: Weather3H(weather3Hdata: forecastWeatherData.list[0])))
+        var i = 1
+        while i < forecastWeatherData.list.count {
+            let weather3h = Weather3H(weather3Hdata: forecastWeatherData.list[i])
+            if isFromOneDay(dt1: days[days.count - 1].weather3HList[0].date, dt2: weather3h.date) {
+                days[days.count - 1].weather3HList.append(weather3h)
+            } else {
+                days.append(WeatherDay(weather3h: weather3h))
+            }
+            i += 1
+        }
+        self.days = days
+    }
+
+    private func isFromOneDay (dt1: Int, dt2: Int) -> Bool {
+        let date1 = Date(timeIntervalSince1970: Double(dt1))
+        let date2 = Date(timeIntervalSince1970: Double(dt2))
+        return Calendar.current.isDate(date1, inSameDayAs: date2)
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        locationManager.stopUpdatingLocation()
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+    }
+
+    override init() {
+        super.init()
+        locationManager.delegate = self
     }
 }

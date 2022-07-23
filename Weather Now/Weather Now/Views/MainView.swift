@@ -10,37 +10,16 @@ import SwiftUI
 struct MainView: View {
     @ObservedObject var forecastWeatherViewModel = ForecastWeatherViewModel()
     @ObservedObject var currentWeatherViewModel = CurrentWeatherViewModel()
-    @State var isLoading = false
-    @State var isForecastHide = false
     @State var isNetworkErrorCatched = false
     @State var isLocationErrorCatched = false
     @State var errorText: String = ""
+    @State var viewToShow: ViewToShow = .loading
     @Environment(\.scenePhase) var scenePhase
     var body: some View {
         NavigationView {
-            ZStack {
-                ForecastView(forecastWeatherViewModel: forecastWeatherViewModel,
-                             currentWeatherViewModel: currentWeatherViewModel)
-                    .hidden(isForecastHide)
-                ProgressView("Looking for your forecast...").hidden(!isLoading)
-                VStack(spacing: 30) {
-                    Text("Something wrong with your \(errorText)").foregroundColor(.secondary)
-                    Button("Refresh") {
-                        Task {
-                            await updateForecastAndWeather()
-                        }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.green)
-                }.hidden(!(isLocationErrorCatched || isNetworkErrorCatched))
-            }
-            .navigationTitle(forecastWeatherViewModel.forecastWeather.cityName)
-            .navigationBarTitleDisplayMode(.large)
-        }
-        .onAppear {
-            Task {
-                await updateForecastAndWeather()
-            }
+            mainView
+                .navigationTitle(forecastWeatherViewModel.cityName)
+                .navigationBarTitleDisplayMode(.large)
         }
         .onChange(of: scenePhase) { newPhase in
             if newPhase == .active {
@@ -51,27 +30,53 @@ struct MainView: View {
         }
     }
     func updateForecastAndWeather() async {
+        viewToShow = .loading
         isLocationErrorCatched = false
         isNetworkErrorCatched = false
         errorText = ""
-        isLoading = true
-        isForecastHide = true
         do {
             try await forecastWeatherViewModel.updateForecast()
             try await currentWeatherViewModel.updateWeather()
         } catch LocationError.notFoundLocation {
             isLocationErrorCatched = true
-            isForecastHide = true
         } catch NetworkError.networkError {
             isNetworkErrorCatched = true
-            isForecastHide = true
         } catch {
         }
         if isLocationErrorCatched || isNetworkErrorCatched {
             if isLocationErrorCatched { errorText.count == 0 ? (errorText += "location") : (errorText += " and location") }
             if isNetworkErrorCatched { errorText.count == 0 ? (errorText += "internet connection") : (errorText += " and internet connection") }
+            viewToShow = .error
+        } else {
+            viewToShow = .weather
         }
-        isLoading = false
-        if !(isNetworkErrorCatched || isLocationErrorCatched) { isForecastHide = false }
     }
+
+    @ViewBuilder
+    var mainView: some View {
+        switch viewToShow {
+        case .loading:
+            ProgressView("Looking for your forecast...")
+        case .weather:
+            ForecastView(forecastWeatherViewModel: forecastWeatherViewModel,
+                         currentWeatherViewModel: currentWeatherViewModel)
+        case .error:
+            VStack(spacing: 30) {
+                Text("Something wrong with your \(errorText)").foregroundColor(Color("secondary"))
+                Button("Refresh") {
+                    Task {
+                        await updateForecastAndWeather()
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Color("green"))
+            }
+        }
+    }
+}
+
+enum ViewToShow {
+    case loading
+    case weather
+    case error
 }

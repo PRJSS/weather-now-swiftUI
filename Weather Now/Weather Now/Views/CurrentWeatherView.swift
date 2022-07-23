@@ -15,7 +15,7 @@ struct CurrentWeatherView: View {
         VStack(alignment: .center, spacing: 30) {
             VStack(alignment: .center, spacing: 10) {
                 Image(systemName: viewModel.image).font(.system(size: 90))
-                Text(viewModel.location)
+                Text(viewModel.locationInfo)
                 Text("\(viewModel.temperature) | \(viewModel.mainCondition)")
                     .font(.system(size: 25))
             }
@@ -46,14 +46,14 @@ struct CurrentWeatherView: View {
                 }
                 Button("Share") {
                     self.isSharePresented = true
-                    let text = "Current weather in \(self.viewModel.location) is: \(self.viewModel.temperature), \(self.viewModel.mainCondition), \(self.viewModel.pressure)."
+                    let text = "Current weather in \(self.viewModel.locationInfo) is: \(self.viewModel.temperature), \(self.viewModel.mainCondition), \(self.viewModel.pressure)."
                     shareText = ShareText(text: text)
                 }
                 .sheet(item: $shareText) { shareText in
                     ActivityView(text: shareText.text)
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.gray)
+                .tint(Color("gray"))
             }
         }
         .padding()
